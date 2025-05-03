@@ -10,8 +10,8 @@ module adder #(
 logic [DATA_WIDTH:0] res;
 assign res   = a_in + b_in;
 
-assign res_o = ( res[DATA_WIDTH] && res[DATA_WIDTH - 1])  ? {1'b0, {DATA_WIDTH - 1{1'b1}}} :
-               ( res[DATA_WIDTH] == res[DATA_WIDTH - 1] ) ? {1'b1, {DATA_WIDTH - 1{1'b0}}} :
-                                                            res[DATA_WIDTH - 1:0];
+assign res_o = (  ~a_in[DATA_WIDTH - 1] && ~b_in[DATA_WIDTH - 1] && res[DATA_WIDTH - 1] )  ? {1'b0, {DATA_WIDTH - 1{1'b1}}} :
+               ( a_in[DATA_WIDTH - 1] && b_in[DATA_WIDTH - 1] && ~res[DATA_WIDTH - 1] )    ? {1'b1, {DATA_WIDTH - 1{1'b0}}} :
+                                                                                  res[DATA_WIDTH - 1:0];
 
 endmodule
