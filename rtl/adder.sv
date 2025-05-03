@@ -1,4 +1,4 @@
-module multiplier #(
+module adder #(
   parameter DATA_WIDTH = 16
 )(
   input  logic signed [DATA_WIDTH - 1:0]  a_in,
