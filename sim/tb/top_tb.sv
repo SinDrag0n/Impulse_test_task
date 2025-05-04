@@ -1,7 +1,7 @@
 module top_tb();
 
   // Parameters
-  localparam  DATA_WIDTH   = 16;
+  localparam  DATA_WIDTH   = 32;
   localparam  TEST_AMMOUNT = 1000;
 
   //Ports
@@ -44,10 +44,6 @@ module top_tb();
   );
 
 always #5  clk_i = ! clk_i ;
-initial begin
-  reset();
-
-end
 
 task reset();
   clk_i     <= 1'b0;
@@ -60,6 +56,10 @@ task reset();
   b_valid_i <= 1'b0;
   c_valid_i <= 1'b0;
   d_valid_i <= 1'b0;
+  #10;
+  artsn_i <= 1'b0;
+  #100;
+  artsn_i <= 1'b1;  
 endtask
 
 task driver();
@@ -76,10 +76,10 @@ task driver();
 endtask
 
 task generate_data();
-  a_i <= $urandom;
-  b_i <= $urandom;
-  c_i <= $urandom;
-  d_i <= $urandom;
+  a_i = $urandom_range(99, 0);
+  b_i = $urandom_range(99, 0);
+  c_i = $urandom_range(99, 0);
+  d_i = $urandom_range(99, 0);
 
   a_valid_i <= 1'b1;
   b_valid_i <= 1'b1;
@@ -102,14 +102,24 @@ task no_test();
 endtask
 
 task monitor();
-  @( posedge clk_i );
-    if ( q_valid_o )
-    q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
+  repeat ( TEST_AMMOUNT ) begin
+    @( negedge clk_i );
+      if ( q_valid_o )
+      q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
 
-    if ( q_expected != q_o ) begin
-      $error("Wrong output data, expected %d, got %d at moment: %t", q_expected, q_o, );
-    end
+      if ( q_expected != q_o ) begin
+        $error("Wrong output data, expected %d, got %d at moment: %t", q_expected, q_o, $time());
+      end
+  end
 endtask
 
+initial begin
+  reset();
+  fork
+  driver();
+  monitor();
+  join
+  $finish();
+end
 
 endmodule
