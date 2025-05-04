@@ -147,7 +147,7 @@ adder # (
   .DATA_WIDTH( DATA_WIDTH )
 )
 adder_abcd (
-  .a_in   ( abc_mul  ),
+  .a_in   ( abc_ff_st2  ),
   .b_in   ( -d_ff_st2  ),
   .res_o  ( q_preresult )
 );
