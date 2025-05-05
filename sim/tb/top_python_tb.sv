@@ -32,21 +32,16 @@ module top_python_tb();
   logic [DATA_WIDTH - 1:0] c_input_queue [$];
   logic [DATA_WIDTH - 1:0] d_input_queue [$];
 
-  logic [DATA_WIDTH-1:0] data_array2 [NUM_LINES-1:0][0:3];
-  string data_array [0:NUM_LINES-1];
+  logic [DATA_WIDTH-1:0] data_array [NUM_LINES-1:0][0:3];
   int i;
   initial begin
     $readmemh("input_data.mem", data_array);
-    $readmemh("input_data.mem", data_array2);
-    foreach( data_array2[i] ) begin
-      logic [DATA_WIDTH-1:0] a_temp, b_temp, c_temp, d_temp;
-
-      $sscanf(data_array[i], "%h %h %h %h", a_temp, b_temp, c_temp, d_temp);
+    foreach( data_array[i] ) begin
       
-      a_input_queue.push_back(data_array2[i][0]);
-      b_input_queue.push_back(data_array2[i][1]);
-      c_input_queue.push_back(data_array2[i][2]);
-      d_input_queue.push_back(data_array2[i][3]);
+      a_input_queue.push_back(data_array[i][0]);
+      b_input_queue.push_back(data_array[i][1]);
+      c_input_queue.push_back(data_array[i][2]);
+      d_input_queue.push_back(data_array[i][3]);
 
     end
 
