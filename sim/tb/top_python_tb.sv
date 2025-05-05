@@ -2,8 +2,9 @@ module top_python_tb();
 
   // Parameters
   localparam  DATA_WIDTH  = 32;
-  localparam  NUM_LINES   = 10;
+  localparam  NUM_LINES   = 5;
   localparam  TEST_CYCLES = 1000;
+  localparam  OUTPUT_FILE_PATH = "C:/Vivado Projects/Impulse_test_task/sim/output_data.txt";
 
   //Ports
   logic clk_i;
@@ -47,7 +48,15 @@ module top_python_tb();
 
   end
 
+  integer log_file;
 
+  initial begin
+    log_file = $fopen(OUTPUT_FILE_PATH, "w");
+    if (log_file == 0) begin
+      $display("Error: Unable to open log file.");
+      $finish;
+    end
+  end
 
 
 
@@ -89,11 +98,15 @@ task reset();
   artsn_i <= 1'b1;  
 endtask
 
+int send_data_cnt;
+
 task driver();
+  send_data_cnt = 0;
   repeat ( TEST_CYCLES ) begin
     @( negedge clk_i );
-    if ( $urandom % 2 ) begin
+    if ( $urandom % 2 && send_data_cnt < NUM_LINES ) begin
       generate_data();
+      send_data_cnt = send_data_cnt + 1;
     end
 
     else begin
@@ -131,13 +144,19 @@ endtask
 task monitor();
   repeat ( TEST_CYCLES ) begin
     @( negedge clk_i );
-      if ( q_valid_o )
-      q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
+      if ( q_valid_o ) begin
+        q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
+        log_results(q_expected, q_o);
+      end
 
       if ( q_expected != q_o ) begin
         $error("Wrong output data, expected %d, got %d at moment: %t", q_expected, q_o, $time());
       end
   end
+endtask
+
+task log_results(input logic [DATA_WIDTH-1:0] expected, input logic [DATA_WIDTH-1:0] actual);
+  $fdisplay(log_file, "%d %d", expected, actual);
 endtask
 
 initial begin
