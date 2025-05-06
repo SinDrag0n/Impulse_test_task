@@ -2,38 +2,38 @@ module top_python_tb();
 
   // Parameters
   localparam  DATA_WIDTH  = 32;
-  localparam  NUM_LINES   = 5;
+  localparam  NUM_LINES   = 10;
   localparam  TEST_CYCLES = 1000;
   localparam  OUTPUT_FILE_PATH = "C:/Vivado Projects/Impulse_test_task/sim/output_data.txt";
 
   //Ports
   logic clk_i;
   logic artsn_i;
-  logic [DATA_WIDTH - 1:0] a_i;
-  logic [DATA_WIDTH - 1:0] b_i;
-  logic [DATA_WIDTH - 1:0] c_i;
-  logic [DATA_WIDTH - 1:0] d_i;
-  logic [DATA_WIDTH - 1:0] q_o;
+  logic signed [DATA_WIDTH - 1:0] a_i;
+  logic signed [DATA_WIDTH - 1:0] b_i;
+  logic signed [DATA_WIDTH - 1:0] c_i;
+  logic signed [DATA_WIDTH - 1:0] d_i;
+  logic signed [DATA_WIDTH - 1:0] q_o;
   logic a_valid_i;
   logic b_valid_i;
   logic c_valid_i;
   logic d_valid_i;
   logic q_valid_o;
 
-  logic [DATA_WIDTH - 1:0] a_queue [$];
-  logic [DATA_WIDTH - 1:0] b_queue [$];
-  logic [DATA_WIDTH - 1:0] c_queue [$];
-  logic [DATA_WIDTH - 1:0] d_queue [$];
+  logic signed [DATA_WIDTH - 1:0] a_queue [$];
+  logic signed [DATA_WIDTH - 1:0] b_queue [$];
+  logic signed [DATA_WIDTH - 1:0] c_queue [$];
+  logic signed [DATA_WIDTH - 1:0] d_queue [$];
 
-  logic [DATA_WIDTH - 1:0] q_expected;
+  logic signed [DATA_WIDTH - 1:0] q_expected;
 
   // File 
-  logic [DATA_WIDTH - 1:0] a_input_queue [$];
-  logic [DATA_WIDTH - 1:0] b_input_queue [$];
-  logic [DATA_WIDTH - 1:0] c_input_queue [$];
-  logic [DATA_WIDTH - 1:0] d_input_queue [$];
+  logic signed [DATA_WIDTH - 1:0] a_input_queue [$];
+  logic signed [DATA_WIDTH - 1:0] b_input_queue [$];
+  logic signed [DATA_WIDTH - 1:0] c_input_queue [$];
+  logic signed [DATA_WIDTH - 1:0] d_input_queue [$];
 
-  logic [DATA_WIDTH-1:0] data_array [NUM_LINES-1:0][0:3];
+  logic signed [DATA_WIDTH-1:0] data_array [NUM_LINES-1:0][0:3];
   int i;
   initial begin
     $readmemh("input_data.mem", data_array);
@@ -144,7 +144,11 @@ task monitor();
   repeat ( TEST_CYCLES ) begin
     @( negedge clk_i );
       if ( q_valid_o ) begin
-        q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
+        q_expected = ( ( (a_queue.pop_back() - b_queue.pop_back()) * (1 + 3 * c_queue.pop_back()) - 4 * d_queue.pop_back() ));
+        if (q_expected > 0)
+          q_expected = q_expected / 2;
+        else 
+          q_expected = (q_expected - 1) / 2;
         log_results(q_expected, q_o);
         send_data_cnt = send_data_cnt + 1;
       end
@@ -162,7 +166,7 @@ task monitor();
 endtask
 
 task log_results(input logic [DATA_WIDTH-1:0] expected, input logic [DATA_WIDTH-1:0] actual);
-  $fdisplay(log_file, "%d %d", expected, actual);
+  $fdisplay(log_file, "%d %d", $signed(expected), $signed(actual));
 endtask
 
 initial begin
