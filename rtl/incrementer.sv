@@ -17,9 +17,9 @@ generate
   end
 endgenerate
 
-assign pos_overflow = data_i == {1'b0, {DATA_WIDTH - 1{1'b1}}};
+assign pos_overflow = data_i == {1'b0, {DATA_WIDTH - 1{1'b1}}}; // Переполняется в случае, если число и так является максимальным в разрядной сетке
 
-assign data_o = ( pos_overflow ) ? data_i :
+assign data_o = ( pos_overflow ) ? data_i : // В случае переполнения возвращает его же
                                    data;
 
 endmodule

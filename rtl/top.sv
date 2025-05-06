@@ -42,7 +42,7 @@ always_ff @( posedge clk_i or negedge artsn_i ) begin : input_flip_flops
     if ( b_valid_i ) b_inp_ff <= b_i;
     if ( b_valid_i ) c_inp_ff <= c_i;
     if ( b_valid_i ) d_inp_ff <= d_i;
-    valid_inp_ff <= &{a_valid_i, b_valid_i, c_valid_i, d_valid_i};
+    valid_inp_ff <= &{a_valid_i, b_valid_i, c_valid_i, d_valid_i};  // Объединение всех сигналов valid - все входные данные пришли и корректны
   end
 end
 
