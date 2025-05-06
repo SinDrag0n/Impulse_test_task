@@ -36,7 +36,7 @@ module top_python_tb();
   logic signed [DATA_WIDTH-1:0] data_array [NUM_LINES-1:0][0:3];
   int i;
   initial begin
-    $readmemh("input_data.mem", data_array);
+    $readmemb("input_data.mem", data_array);
     foreach( data_array[i] ) begin
       
       a_input_queue.push_back(data_array[i][0]);
