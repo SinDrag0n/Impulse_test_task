@@ -101,12 +101,10 @@ endtask
 int send_data_cnt;
 
 task driver();
-  send_data_cnt = 0;
   repeat ( TEST_CYCLES ) begin
     @( negedge clk_i );
     if ( $urandom % 2 && send_data_cnt < NUM_LINES ) begin
       generate_data();
-      send_data_cnt = send_data_cnt + 1;
     end
 
     else begin
@@ -142,15 +140,23 @@ task no_test();
 endtask
 
 task monitor();
+  send_data_cnt = 0;
   repeat ( TEST_CYCLES ) begin
     @( negedge clk_i );
       if ( q_valid_o ) begin
         q_expected = ( ( a_queue.pop_back() - b_queue.pop_back() ) * ( 1 + 3 * c_queue.pop_back() ) - 4 * d_queue.pop_back() ) / 2;
         log_results(q_expected, q_o);
+        send_data_cnt = send_data_cnt + 1;
       end
 
       if ( q_expected != q_o ) begin
         $error("Wrong output data, expected %d, got %d at moment: %t", q_expected, q_o, $time());
+      end
+
+      if (!(send_data_cnt < NUM_LINES)) begin
+        no_test();
+        @( posedge clk_i );
+        return;
       end
   end
 endtask
@@ -164,7 +170,7 @@ initial begin
   fork
   driver();
   monitor();
-  join
+  join_any
   $finish();
 end
 
