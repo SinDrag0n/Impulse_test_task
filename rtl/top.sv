@@ -1,5 +1,5 @@
 module top #(
-  parameter DATA_WIDTH = 16
+  parameter DATA_WIDTH = 32
 )(
   input  logic clk_i,
   input  logic artsn_i,
@@ -54,9 +54,9 @@ logic [DATA_WIDTH - 1:0] ab_ff_st1;
 logic [DATA_WIDTH - 1:0] c_ff_st1;
 logic [DATA_WIDTH - 1:0] d_ff_st1;
 
-logic [DATA_WIDTH - 1:0] c_multiplied;
-logic [DATA_WIDTH - 1:0] c_incremented;
-logic [DATA_WIDTH - 1:0] ab_summed;
+logic signed [DATA_WIDTH - 1:0] c_multiplied;
+logic signed [DATA_WIDTH - 1:0] c_incremented;
+logic signed [DATA_WIDTH - 1:0] ab_summed;
 
 logic valid_ff_st1;
 
@@ -141,7 +141,7 @@ multiplier_abc (
 
 /// Stage 3 pipeline
 
-logic [DATA_WIDTH - 1:0] q_preresult;
+logic signed [DATA_WIDTH - 1:0] q_preresult;
 
 adder # (
   .DATA_WIDTH( DATA_WIDTH )
