@@ -1,5 +1,5 @@
 module top #(
-  parameter DATA_WIDTH = 5
+  parameter DATA_WIDTH = 32
 )(
   input  logic clk_i,
   input  logic artsn_i,
