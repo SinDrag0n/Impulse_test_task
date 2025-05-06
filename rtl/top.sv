@@ -1,5 +1,5 @@
 module top #(
-  parameter DATA_WIDTH = 32
+  parameter DATA_WIDTH = 5
 )(
   input  logic clk_i,
   input  logic artsn_i,
@@ -71,7 +71,7 @@ always_ff @( posedge clk_i or negedge artsn_i ) begin : stage1_pipeline
   else begin
     ab_ff_st1 <= ab_summed;       // (a-b)
     c_ff_st1  <= c_incremented;   // 3*c + 1
-    d_ff_st1  <= d_inp_ff << 2;   // 4*d
+    d_ff_st1  <= d_inp_ff <<< 2;   // 4*d
     valid_ff_st1 <= valid_inp_ff;
   end
 end
